@@ -7,13 +7,25 @@
 body { font-family: Arial, sans-serif; max-width: 640px; margin: 30px auto; }
 .aprobado { color: #27ae60; }
 .desaprobado { color: #c0392b; }
+.error { color: #c0392b; }
+li { margin-bottom: 6px; }
 </style>
 </head>
 <body>
 <h1>Registro de notas</h1>
+
+<form id="formNota" novalidate>
+  <input id="nombre" type="text" placeholder="Nombre del estudiante">
+  <input id="nota" type="number" step="any" placeholder="Nota (0 a 20)">
+  <button type="submit">Agregar</button>
+</form>
+<p id="mensaje"></p>
+
+<input id="buscador" type="text" placeholder="Buscar estudiante">
+
 <ul id="lista"></ul>
 <p>Promedio: <span id="promedio">0.00</span></p>
+
 <script src="app.js"></script>
 </body>
 </html>
- 
