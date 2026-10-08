@@ -1,9 +1,54 @@
-// Version 2: DOM + eventos
-const estudiantes = [
-  { nombre: "Ana", nota: 15 },
-  { nombre: "Luis", nota: 9 },
-  { nombre: "Marta", nota: 18 }
-];
+// Version 3: DOM + eventos + clases y objetos
+class Estudiante {
+  constructor(nombre, nota) {
+    this.nombre = nombre;
+    this.nota = nota;
+  }
+
+  aprobado() {
+    return this.nota >= 11;
+  }
+
+  descripcion() {
+    return this.nombre + " - " + this.nota.toFixed(2);
+  }
+}
+
+class Registro {
+  constructor() {
+    this.estudiantes = [];
+  }
+
+  agregar(estudiante) {
+    this.estudiantes.push(estudiante);
+  }
+
+  eliminar(estudiante) {
+    this.estudiantes = this.estudiantes.filter((e) => e !== estudiante);
+  }
+
+  buscar(texto) {
+    return this.estudiantes.filter((e) =>
+      e.nombre.toLowerCase().includes(texto.toLowerCase())
+    );
+  }
+
+  promedio() {
+    if (this.estudiantes.length === 0) {
+      return 0;
+    }
+    let suma = 0;
+    this.estudiantes.forEach((e) => {
+      suma = suma + e.nota;
+    });
+    return suma / this.estudiantes.length;
+  }
+}
+
+const registro = new Registro();
+registro.agregar(new Estudiante("Ana", 15));
+registro.agregar(new Estudiante("Luis", 9));
+registro.agregar(new Estudiante("Marta", 18));
 
 const formNota = document.querySelector("#formNota");
 const campoNombre = document.querySelector("#nombre");
@@ -15,23 +60,16 @@ const promedio = document.querySelector("#promedio");
 
 function mostrar() {
   lista.replaceChildren();
-  const texto = buscador.value.toLowerCase();
-  let suma = 0;
 
-  estudiantes.forEach((e, i) => {
-    suma = suma + e.nota;
-    if (!e.nombre.toLowerCase().includes(texto)) {
-      return;
-    }
-
+  registro.buscar(buscador.value).forEach((e) => {
     const li = document.createElement("li");
-    li.textContent = e.nombre + " - " + e.nota.toFixed(2) + " ";
-    li.classList.add(e.nota >= 11 ? "aprobado" : "desaprobado");
+    li.textContent = e.descripcion() + " ";
+    li.classList.add(e.aprobado() ? "aprobado" : "desaprobado");
 
     const btnBorrar = document.createElement("button");
     btnBorrar.textContent = "Borrar";
     btnBorrar.addEventListener("click", () => {
-      estudiantes.splice(i, 1);
+      registro.eliminar(e);
       mostrar();
     });
 
@@ -39,11 +77,7 @@ function mostrar() {
     lista.appendChild(li);
   });
 
-  if (estudiantes.length > 0) {
-    promedio.textContent = (suma / estudiantes.length).toFixed(2);
-  } else {
-    promedio.textContent = "0.00";
-  }
+  promedio.textContent = registro.promedio().toFixed(2);
 }
 
 formNota.addEventListener("submit", (evento) => {
@@ -59,7 +93,7 @@ formNota.addEventListener("submit", (evento) => {
     mensaje.textContent = "La nota debe estar entre 0 y 20";
     mensaje.classList.add("error");
   } else {
-    estudiantes.push({ nombre: nombre, nota: nota });
+    registro.agregar(new Estudiante(nombre, nota));
     mensaje.textContent = "";
     mensaje.classList.remove("error");
     formNota.reset();
